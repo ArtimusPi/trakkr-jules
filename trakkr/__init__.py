@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 app.config.from_object('trakkr.config.Config')
+print(f"!!!!!!!!!! INITIALIZED APP WITH DATABASE URI: {app.config.get('SQLALCHEMY_DATABASE_URI')} !!!!!!!!!!", flush=True)
 
 db = SQLAlchemy(app)
 
@@ -26,3 +27,9 @@ app.register_blueprint(main_bp) # Register main_bp
 # You might want to register blueprints here if you use them
 # from .controllers.some_controller import some_blueprint
 # app.register_blueprint(some_blueprint)
+
+@app.cli.command("init_db")
+def init_db_command():
+ """Creates the database tables."""
+ db.create_all()
+ print("Database tables created (or already existed via init_db command).")
