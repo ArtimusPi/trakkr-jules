@@ -1,3 +1,5 @@
 Flask
 Flask-SQLAlchemy
 pytest
+gunicorn
+psycopg2-binary
