@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block title %}Parent Dashboard - Trakkr{% endblock %}
+
+{% block content %}
+<h2>Parent Dashboard (User ID: {{ parent_info.parent_id }})</h2>
+<p>Welcome, {{ parent_info.username }}!</p>
+
+<section id="my-chores">
+    <h3>My Created Chores</h3>
+    {% if parent_info.chores_created and parent_info.chores_created|length > 0 %}
+        <ul>
+            {% for chore in parent_info.chores_created %}
+            <li class="chore-item">
+                <strong>{{ chore.name }}</strong> (ID: {{ chore.chore_id }})
+                <p>{{ chore.description | default('No description') }}</p>
+                {% if chore.assignments and chore.assignments|length > 0 %}
+                <p>Current Assignments:</p>
+                <ul class="assignments-list">
+                    {% for assignment in chore.assignments %}
+                    <li>
+                        {{ assignment.kid_username }} (Kid ID: {{ assignment.kid_id }}) - Status: {{ assignment.status }}
+                        {% if assignment.completed_at %}(Completed: {{ assignment.completed_at }}){% endif %}
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p><em>No current assignments for this chore.</em></p>
+                {% endif %}
+            </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>You haven't created any chores yet.</p>
+    {% endif %}
+</section>
+
+<hr>
+
+<section id="create-chore">
+    <h3>Create New Chore</h3>
+    <form action="/chores/create" method="POST">
+        <input type="hidden" name="created_by_id" value="{{ parent_info.parent_id }}">
+        <div>
+            <label for="name">Chore Name:</label>
+            <input type="text" id="name" name="name" required>
+        </div>
+        <div>
+            <label for="description">Description (Optional):</label>
+            <textarea id="description" name="description"></textarea>
+        </div>
+        <!-- Simplified: Not including recurring/rotating fields in this basic UI form -->
+        <button type="submit">Create Chore</button>
+    </form>
+</section>
+
+<hr>
+
+<section id="assign-chore">
+    <h3>Assign Chore to Kid</h3>
+    {% if parent_info.chores_created and all_kids and parent_info.chores_created|length > 0 and all_kids|length > 0 %}
+        <form method="POST"> {# Action will be set by JavaScript or a more complex setup; for now, user fills chore ID #}
+            <div>
+                <label for="chore_to_assign">Chore to Assign:</label>
+                <select id="chore_to_assign" name="chore_id">
+                    {% for chore in parent_info.chores_created %}
+                        <option value="{{ chore.chore_id }}">{{ chore.name }} (ID: {{ chore.chore_id }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label for="kid_to_assign">Kid to Assign To:</label>
+                <select id="kid_to_assign" name="user_ids"> {# API expects user_ids as a list #}
+                    {% for kid in all_kids %}
+                        <option value="{{ kid.id }}">{{ kid.username }} (ID: {{ kid.id }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <p><small>Note: The form will submit to /chores/CHORE_ID/assign. You might need to adjust the action URL or use JavaScript for dynamic action.</small></p>
+            <button type="button" onclick="this.form.action='/chores/' + this.form.chore_id.value + '/assign'; this.form.submit();">Assign Chore</button>
+        </form>
+    {% else %}
+        {% if not parent_info.chores_created or parent_info.chores_created|length == 0 %}
+        <p>You need to create a chore before you can assign one.</p>
+        {% endif %}
+        {% if not all_kids or all_kids|length == 0 %}
+        <p>There are no kids in the system to assign chores to.</p>
+        {% endif %}
+    {% endif %}
+</section>
+
+{% endblock %}

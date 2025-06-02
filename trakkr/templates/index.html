@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}Welcome to Trakkr{% endblock %}
+
+{% block content %}
+<h2>Select User Profile (Demo)</h2>
+<p>This page is a placeholder for a real login system. For now, select a sample user profile to view their dashboard:</p>
+<ul>
+    {% for user in sample_users %}
+    <li>
+        <a href="{{ user.link }}">
+            Login as {{ user.username }} ({{ user.role }})
+        </a>
+    </li>
+    {% endfor %}
+    <li><a href="/dashboards/parent/99">Test Non-Existent Parent</a></li>
+    <li><a href="/dashboards/kid/99">Test Non-Existent Kid</a></li>
+
+</ul>
+
+<p><strong>Note:</strong> Ensure that sample users with IDs 1 (parent), 2 (kid), and 3 (kid) exist in your database. You can run the application (<code>python run.py</code>) to trigger their creation if they don't exist.</p>
+
+<h3>Testing API Endpoints (Advanced)</h3>
+<p>You can also test the API endpoints directly using tools like Postman or curl:</p>
+<ul>
+    <li><strong>Parent Dashboard API:</strong> <code>GET /api/dashboards/parent/&lt;parent_id&gt;</code></li>
+    <li><strong>Kid Dashboard API:</strong> <code>GET /api/dashboards/kid/&lt;kid_id&gt;</code></li>
+    <li><strong>Create Chore:</strong> <code>POST /chores/create</code></li>
+    <li><strong>Assign Chore:</strong> <code>POST /chores/&lt;chore_id&gt;/assign</code></li>
+    <li><strong>Complete Assignment:</strong> <code>POST /assignments/&lt;assignment_id&gt;/complete</code></li>
+    <li><strong>Trigger Recurring:</strong> <code>POST /chores/trigger-recurring</code></li>
+</ul>
+
+{% endblock %}

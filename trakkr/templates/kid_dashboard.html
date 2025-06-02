@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}Kid Dashboard - Trakkr{% endblock %}
+
+{% block content %}
+<h2>Kid Dashboard (User ID: {{ kid_info.kid_id }})</h2>
+<p>Welcome, {{ kid_info.username }}!</p>
+
+<section id="my-pending-chores">
+    <h3>My Pending Chores</h3>
+    {% if kid_info.pending_chores and kid_info.pending_chores|length > 0 %}
+        <ul>
+            {% for chore_assignment in kid_info.pending_chores %}
+            <li class="chore-item">
+                <strong>{{ chore_assignment.chore_name }}</strong>
+                <p>{{ chore_assignment.chore_description | default('No description') }}</p>
+                <p><small>Assigned: {{ chore_assignment.assigned_at }} | Status: {{ chore_assignment.status }}</small></p>
+                <form action="/assignments/{{ chore_assignment.assignment_id }}/complete" method="POST" style="display: inline;">
+                    <button type="submit">Mark as Complete</button>
+                </form>
+            </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>You have no pending chores. Great job, or check back later!</p>
+    {% endif %}
+</section>
+
+{% endblock %}
